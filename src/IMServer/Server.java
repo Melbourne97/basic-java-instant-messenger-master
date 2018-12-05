@@ -2,6 +2,7 @@ package IMServer;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.EOFException;
@@ -13,23 +14,34 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 public class Server extends JFrame {
 
     private JTextField userMessage;
     private JTextArea chatBox;
+    private JComboBox fontComboBox;
+    private JComboBox sizeComboBox;
+    private JComboBox weightComboBox;
+    private String currentFontName = "DIALOG";
+    private int currentFontSize = 12;
+    private JMenuBar fontBar;
     private ObjectOutputStream output;
     private ObjectInputStream input;
     private ServerSocket server;
     private Socket connection;
+    
+    String [] fonts = {"Dialog", "Monospaced", "Sans Serif", "Serif"};
+    String [] sizes = {"10 pt.", "12 pt.", "14 pt."};
+    String [] weights = {"Plain", "Bold", "Italic"};
+    
+    Font defaultFont = new Font(Font.DIALOG, Font.PLAIN, 12);
 
     
     //JFrame created and edit
@@ -40,13 +52,153 @@ public class Server extends JFrame {
         userMessage.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 sendMessage(event.getActionCommand());
+                chatBox.setFont(defaultFont);
+                userMessage.setFont(defaultFont);
                 userMessage.setText("");
             }
         });
+        
+        //Add font style choice menu.
+        fontBar = new JMenuBar();
+        add(fontBar, BorderLayout.NORTH);
+        fontComboBox = new JComboBox(fonts);
+        fontComboBox.setSelectedIndex(0);
+        fontComboBox.addActionListener(fontComboBox);
+        
+        fontComboBox.addActionListener (new ActionListener () 
+        {
+            public void actionPerformed(ActionEvent e) 
+            {
+        		JComboBox source = (JComboBox) e.getSource();
+                String style = (String) source.getSelectedItem();
+                switch (style) 
+                {
+                    case "Dialog":
+                    	Font font = new Font(Font.DIALOG, weightComboBox.getSelectedIndex(), currentFontSize);
+                    	userMessage.setFont(font);
+                    	chatBox.setFont(font);
+                    	currentFontName = "DIALOG";
+                        break;
+                    case "Monospaced":
+                    	Font font2 = new Font(Font.MONOSPACED, weightComboBox.getSelectedIndex(), currentFontSize);
+                    	userMessage.setFont(font2);
+                    	chatBox.setFont(font2);
+                    	currentFontName = "MONOSPACED";
+                        break;
+                    case "Sans Serif":
+                    	Font font3 = new Font(Font.SANS_SERIF, weightComboBox.getSelectedIndex(), currentFontSize);
+                    	userMessage.setFont(font3);
+                    	chatBox.setFont(font3);
+                    	currentFontName = "SANS_SERIF";
+                        break;
+                    case "Serif":
+                    	Font font4 = new Font(Font.SERIF, weightComboBox.getSelectedIndex(), currentFontSize);
+                    	userMessage.setFont(font4);
+                    	chatBox.setFont(font4);
+                    	currentFontName = "SERIF";
+                        break;
+                    default:
+                    	userMessage.setFont(defaultFont);
+                    	chatBox.setFont(defaultFont);
+                    	currentFontName = "DIALOG";
+                    	currentFontSize = 12;
+                        break;
+                }
+            }
+        });
+        
+        fontBar.add(fontComboBox);
+        
+        //Size combo box.
+        sizeComboBox = new JComboBox(sizes);
+        sizeComboBox.setSelectedIndex(1);
+        sizeComboBox.addActionListener(sizeComboBox);
+        
+        sizeComboBox.addActionListener (new ActionListener () 
+        {
+            public void actionPerformed(ActionEvent e) 
+            {
+        		JComboBox source = (JComboBox) e.getSource();
+                String size = (String) source.getSelectedItem();
+                switch (size) 
+                {
+                    case "10 pt.":
+                    	Font font = new Font(currentFontName, weightComboBox.getSelectedIndex(), 10);
+                    	currentFontSize = 10;
+                    	userMessage.setFont(font);
+                    	chatBox.setFont(font);
+                        break;
+                    case "12 pt.":
+                    	Font font2 = new Font(currentFontName, weightComboBox.getSelectedIndex(), 12);
+                    	currentFontSize = 12;
+                    	userMessage.setFont(font2);
+                    	chatBox.setFont(font2);
+                        break;
+                    case "14 pt.":
+                    	Font font3 = new Font(currentFontName, weightComboBox.getSelectedIndex(), 14);
+                    	userMessage.setFont(font3);
+                    	chatBox.setFont(font3);
+                    	currentFontSize = 14;
+                        break;
+                    default:
+                    	userMessage.setFont(defaultFont);
+                    	chatBox.setFont(defaultFont);
+                    	currentFontName = "DIALOG";
+                    	currentFontSize = 12;
+                        break;
+                }
+            }
+        });
+        fontBar.add(sizeComboBox);
+        
+        //Weight combo box.
+        weightComboBox = new JComboBox(weights);
+        weightComboBox.setSelectedIndex(0);
+        weightComboBox.addActionListener(weightComboBox);
+        
+        weightComboBox.addActionListener (new ActionListener () 
+        {
+            public void actionPerformed(ActionEvent e) 
+            {
+        		JComboBox source = (JComboBox) e.getSource();
+                String weight = (String) source.getSelectedItem();
+                switch (weight) 
+                {
+                    case "Plain":
+                    	Font font = new Font(currentFontName, Font.PLAIN, currentFontSize);
+                    	userMessage.setFont(font);
+                    	chatBox.setFont(font);
+                        break;
+                    case "Bold":
+                    	Font font2 = new Font(currentFontName, Font.BOLD, currentFontSize);
+                    	userMessage.setFont(font2);
+                    	chatBox.setFont(font2);
+                        break;
+                    case "Italic":
+                    	Font font3 = new Font(currentFontName, Font.ITALIC, currentFontSize);
+                    	userMessage.setFont(font3);
+                    	chatBox.setFont(font3);
+                        break;
+                    default:
+                    	userMessage.setFont(defaultFont);
+                    	chatBox.setFont(defaultFont);
+                    	currentFontName = "DIALOG";
+                    	currentFontSize = 12;
+                        break;
+                }
+            }
+        });
+        
+        fontBar.add(weightComboBox);
+        
+        
         add(userMessage, BorderLayout.SOUTH);
         chatBox = new JTextArea();
         add(new JScrollPane(chatBox));
         chatBox.setBackground(Color.lightGray);
+        
+        
+        
         setSize(500, 500);
         setVisible(true);
 
@@ -149,6 +301,7 @@ public class Server extends JFrame {
         });
     }
     
+    //displays server IP address in the console
     public void MyIpAddress() {
    	 try {
             InetAddress ipAddr = InetAddress.getLocalHost();
