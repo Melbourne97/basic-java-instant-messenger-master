@@ -13,10 +13,14 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -32,10 +36,20 @@ public class Server extends JFrame {
     private String currentFontName = "DIALOG";
     private int currentFontSize = 12;
     private JMenuBar fontBar;
+    private JMenu optionMenu;
+    private JMenu BGOptionMenu;
+    private JMenuItem clearItem;
+    private JMenuItem BGBlue;
+    private JMenuItem BGLight_Gray;
+    private JMenuItem BGRed;
+    private JMenuItem BGPink;
     private ObjectOutputStream output;
     private ObjectInputStream input;
     private ServerSocket server;
     private Socket connection;
+    
+    String timestamp = new SimpleDateFormat("HH:mm").format(new Date());
+
     
     String [] fonts = {"Dialog", "Monospaced", "Sans Serif", "Serif"};
     String [] sizes = {"10 pt.", "12 pt.", "14 pt."};
@@ -202,7 +216,57 @@ public class Server extends JFrame {
         setSize(500, 500);
         setVisible(true);
 
-    }
+
+        
+        
+        //add menu to change background color
+          
+          optionMenu = new JMenu("Options");
+          BGOptionMenu = new JMenu("Background Color");
+          clearItem = new JMenuItem("Clear Message");
+          fontBar.add(optionMenu);
+          optionMenu.add(BGOptionMenu);
+          optionMenu.add(clearItem);
+          BGBlue = new JMenuItem("Blue");
+          BGLight_Gray = new JMenuItem("Grey");
+          BGRed = new JMenuItem("Red");
+          BGPink = new JMenuItem("Pink");
+          BGOptionMenu.add(BGBlue);
+          BGOptionMenu.add(BGLight_Gray);
+          BGOptionMenu.add(BGRed);
+          BGOptionMenu.add(BGPink);
+          
+          clearItem.addActionListener(new ActionListener (){
+              public void actionPerformed(ActionEvent e){
+              	userMessage.setText("");
+              }
+          });
+          
+          BGBlue.addActionListener (new ActionListener (){
+              public void actionPerformed(ActionEvent e){
+              	chatBox.setBackground(Color.CYAN);
+              }
+          });
+          
+          BGLight_Gray.addActionListener (new ActionListener (){
+              public void actionPerformed(ActionEvent e){
+              	chatBox.setBackground(Color.LIGHT_GRAY);
+              }
+          });
+          
+          BGRed.addActionListener (new ActionListener (){
+              public void actionPerformed(ActionEvent e){
+              	chatBox.setBackground(Color.RED);}
+          });
+          
+          BGPink.addActionListener (new ActionListener (){
+              public void actionPerformed(ActionEvent e){
+              	chatBox.setBackground(Color.PINK);
+              }
+          });
+          
+         }
+
 
     //starts server and checks for client
     public void startRunning() {
@@ -277,7 +341,7 @@ public class Server extends JFrame {
         try {
             output.writeObject("ADMIN- " + message);
             output.flush();
-            showMessage("\nADMIN- " + message);
+            showMessage("\n[ " + timestamp + " ]" + "USER - " + message);
 
         } catch (IOException ioException) {
             chatBox.append("\nERROR: Can't send that message");

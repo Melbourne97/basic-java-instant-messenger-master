@@ -14,12 +14,16 @@ import java.net.Socket;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.Font;
 import javax.swing.SwingUtilities;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Client extends JFrame {
 
@@ -29,6 +33,13 @@ public class Client extends JFrame {
     private JComboBox sizeComboBox;
     private JComboBox weightComboBox;
     private JMenuBar fontBar;
+    private JMenu optionMenu;
+    private JMenu BGOptionMenu;
+    private JMenuItem clearItem;
+    private JMenuItem BGBlue;
+    private JMenuItem BGLight_Gray;
+    private JMenuItem BGRed;
+    private JMenuItem BGPink;
     private String currentFontName = "DIALOG";
     private int currentFontSize = 12;
     private ObjectOutputStream output;
@@ -36,6 +47,9 @@ public class Client extends JFrame {
     private String message = "";
     private String serverIP;
     private Socket connection;
+    
+    String timestamp = new SimpleDateFormat("HH:mm").format(new Date());
+    
     
     String [] fonts = {"Dialog", "Monospaced", "Sans Serif", "Serif"};
     String [] sizes = {"10 pt.", "12 pt.", "14 pt."};
@@ -193,23 +207,66 @@ public class Client extends JFrame {
         
         fontBar.add(weightComboBox);
         
-        
-        
         add(userMessage, BorderLayout.SOUTH);
         chatBox = new JTextArea();
         add(new JScrollPane(chatBox), BorderLayout.CENTER);
         chatBox.setBackground(Color.lightGray);
         
-        
-        
         setSize(500, 500);
         setVisible(true);
 
-    }
+    
+    
+  //add menu to change background color
+    
+    optionMenu = new JMenu("Options");
+    BGOptionMenu = new JMenu("Background Color");
+    clearItem = new JMenuItem("Clear Message");
+    fontBar.add(optionMenu);
+    optionMenu.add(BGOptionMenu);
+    optionMenu.add(clearItem);
+    BGBlue = new JMenuItem("Blue");
+    BGLight_Gray = new JMenuItem("Grey");
+    BGRed = new JMenuItem("Red");
+    BGPink = new JMenuItem("Pink");
+    BGOptionMenu.add(BGBlue);
+    BGOptionMenu.add(BGLight_Gray);
+    BGOptionMenu.add(BGRed);
+    BGOptionMenu.add(BGPink);
+    
+    clearItem.addActionListener(new ActionListener (){
+        public void actionPerformed(ActionEvent e){
+        	userMessage.setText("");
+        }
+    });
+    
+    BGBlue.addActionListener (new ActionListener (){
+        public void actionPerformed(ActionEvent e){
+        	chatBox.setBackground(Color.CYAN);
+        }
+    });
+    
+    BGLight_Gray.addActionListener (new ActionListener (){
+        public void actionPerformed(ActionEvent e){
+        	chatBox.setBackground(Color.LIGHT_GRAY);
+        }
+    });
+    
+    BGRed.addActionListener (new ActionListener (){
+        public void actionPerformed(ActionEvent e){
+        	chatBox.setBackground(Color.RED);}
+    });
+    
+    BGPink.addActionListener (new ActionListener (){
+        public void actionPerformed(ActionEvent e){
+        	chatBox.setBackground(Color.PINK);
+        }
+    });
+    
+   }
 
     //checks for server
     public void startRunning() {
-
         try {
             connectToServer();
             setupStreams();
@@ -273,7 +330,7 @@ public class Client extends JFrame {
         try {
             output.writeObject("USER - " + message);
             output.flush();
-            showMessage("\nUSER - " + message);
+            showMessage("\n[ " + timestamp + " ]" + "USER - " + message);            
         } catch (IOException ioException) {
             chatBox.append("\nSomething is messed up!");
         }
